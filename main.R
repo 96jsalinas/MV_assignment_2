@@ -15,7 +15,7 @@ library(readr)
 library(tidyr)
 library(ggplot2)
 library(gridExtra)
-library(corrplot)
+library(GGally)
 
 source("preprocessing.R")
 source("data_exploration.R")
