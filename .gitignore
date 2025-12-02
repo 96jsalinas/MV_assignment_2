@@ -12,3 +12,4 @@
 
 # RStudio project files
 *.Rproj
+.Rproj.*
