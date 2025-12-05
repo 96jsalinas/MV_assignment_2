@@ -1,15 +1,5 @@
-# R and RStudio files
-.Rproj.user/
+.Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-
-# Session Data files
-.RData
-
-# User-specific files
-.Ruserdata
-
-# RStudio project files
-*.Rproj
-.Rproj.*
+.lintr
