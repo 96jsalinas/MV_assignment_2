@@ -1,12 +1,17 @@
 # ==============================================================================
 # CLUSTERING ANALYSIS - Heart Disease Dataset
 # ==============================================================================
-# This script performs clustering analysis on mixed-type data using:
-# 1. Gower's distance for mixed data
-# 2. Hierarchical clustering (single, complete, average linkage)
-# 3. PAM (Partitioning Around Medoids)
-# 4. K-Prototypes
-# 5. Silhouette validation
+# This script performs clustering analysis on mixed-type data:
+#
+# 1. Data Preparation - Select clustering variables (exclude target)
+# 2. Gower's Distance - Compute distance matrix for mixed data types
+# 3. Silhouette Analysis - Determine optimal number of clusters (k)
+# 4. Hierarchical Clustering - Single, complete, average linkage with dendrograms
+# 5. PAM Clustering - Partitioning Around Medoids
+# 6. K-Prototypes Clustering - Mixed-type partitioning method
+# 7. Methods Comparison - Compare silhouette scores across all methods
+# 8. Visualization - Silhouette plots and method comparison charts
+# 9. External Validation - Cross-tabulate clusters with disease status
 # ==============================================================================
 
 # ==============================================================================
@@ -103,38 +108,38 @@ linkage_methods <- c("single", "complete", "average")
 hc_results <- list()
 
 for (method in linkage_methods) {
-  hc_results[[method]] <- hclust(gower_dist, method = method)
-  cat("Computed hierarchical clustering with", method, "linkage\n")
+    hc_results[[method]] <- hclust(gower_dist, method = method)
+    cat("Computed hierarchical clustering with", method, "linkage\n")
 }
 
 # Plot dendrograms (without cluster rectangles - initial view)
 png("visualizations/dendrograms.png", width = 1200, height = 400)
 par(mfrow = c(1, 3))
 for (method in linkage_methods) {
-  plot(hc_results[[method]],
-       main = paste("Dendrogram -", tools::toTitleCase(method), "Linkage"),
-       xlab = "", sub = "", cex = 0.6,
-       hang = -1
-  )
+    plot(hc_results[[method]],
+        main = paste("Dendrogram -", tools::toTitleCase(method), "Linkage"),
+        xlab = "", sub = "", cex = 0.6,
+        hang = -1
+    )
 }
 dev.off()
 cat("\nDendrograms saved to 'visualizations/dendrograms.png'\n")
 
 # Plot dendrograms with cluster rectangles (after optimal k is determined)
 plot_dendrograms_with_clusters <- function(k) {
-  cluster_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33")
-  png("visualizations/dendrograms_clusters.png", width = 1200, height = 500)
-  par(mfrow = c(1, 3), mar = c(5, 4, 4, 2))
-  for (method in linkage_methods) {
-    plot(hc_results[[method]],
-         main = paste("Dendrogram -", tools::toTitleCase(method), "Linkage"),
-         xlab = "", sub = paste("k =", k), cex = 0.5,
-         hang = -1
-    )
-    rect.hclust(hc_results[[method]], k = k, border = cluster_colors[1:k])
-  }
-  dev.off()
-  cat("Dendrograms with cluster cuts saved to 'visualizations/dendrograms_clusters.png'\n\n")
+    cluster_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33")
+    png("visualizations/dendrograms_clusters.png", width = 1200, height = 500)
+    par(mfrow = c(1, 3), mar = c(5, 4, 4, 2))
+    for (method in linkage_methods) {
+        plot(hc_results[[method]],
+            main = paste("Dendrogram -", tools::toTitleCase(method), "Linkage"),
+            xlab = "", sub = paste("k =", k), cex = 0.5,
+            hang = -1
+        )
+        rect.hclust(hc_results[[method]], k = k, border = cluster_colors[1:k])
+    }
+    dev.off()
+    cat("Dendrograms with cluster cuts saved to 'visualizations/dendrograms_clusters.png'\n\n")
 }
 
 # Cut dendrograms at optimal k
