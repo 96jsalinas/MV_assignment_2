@@ -325,6 +325,70 @@ cat("Proportions within each cluster:\n")
 print(round(prop.table(cross_tab, margin = 1), 3))
 cat("\n")
 
+# Visualize cross-tabulation
+# Create data frame for ggplot
+cross_tab_df <- as.data.frame(cross_tab)
+names(cross_tab_df) <- c("Cluster", "Disease", "Count")
+
+# Calculate proportions for labels
+cross_tab_df <- cross_tab_df %>%
+    group_by(Cluster) %>%
+    mutate(
+        Total = sum(Count),
+        Proportion = Count / Total,
+        Label = paste0(Count, "\n(", round(Proportion * 100, 1), "%)")
+    )
+
+# Stacked bar chart
+p1 <- ggplot(cross_tab_df, aes(x = factor(Cluster), y = Count, fill = Disease)) +
+    geom_bar(stat = "identity", position = "stack", width = 0.7) +
+    geom_text(aes(label = Label),
+        position = position_stack(vjust = 0.5),
+        size = 4, color = "white", fontface = "bold"
+    ) +
+    scale_fill_manual(values = c("No Disease" = "#4DAF4A", "Disease" = "#E41A1C")) +
+    labs(
+        title = "Cluster Composition by Disease Status",
+        subtitle = paste("Best method:", best_method, "| k =", optimal_k),
+        x = "Cluster",
+        y = "Number of Patients",
+        fill = "Disease Status"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+        plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.position = "bottom"
+    )
+
+# Proportional stacked bar chart (100% stacked)
+p2 <- ggplot(cross_tab_df, aes(x = factor(Cluster), y = Proportion, fill = Disease)) +
+    geom_bar(stat = "identity", position = "stack", width = 0.7) +
+    geom_text(aes(label = paste0(round(Proportion * 100, 1), "%")),
+        position = position_stack(vjust = 0.5),
+        size = 5, color = "white", fontface = "bold"
+    ) +
+    scale_fill_manual(values = c("No Disease" = "#4DAF4A", "Disease" = "#E41A1C")) +
+    scale_y_continuous(labels = scales::percent) +
+    labs(
+        title = "Disease Proportion by Cluster",
+        x = "Cluster",
+        y = "Proportion",
+        fill = "Disease Status"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+        plot.title = element_text(hjust = 0.5, face = "bold"),
+        legend.position = "bottom"
+    )
+
+# Save combined plot
+png("visualizations/cluster_disease_comparison.png", width = 1000, height = 500)
+grid.arrange(p1, p2, ncol = 2)
+dev.off()
+cat("Cluster-disease comparison saved to 'visualizations/cluster_disease_comparison.png'\n\n")
+
+
 # ==============================================================================
 # SUMMARY
 # ==============================================================================

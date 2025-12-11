@@ -126,8 +126,39 @@ The two medoids (cluster representatives) show distinct clinical profiles:
 
 ---
 
-## 8. Next Steps
+## 8. External Validation (Clusters vs Disease Status)
 
-- [ ] External validation: Cross-tabulate clusters with actual disease status
+Cross-tabulating PAM clusters with the actual disease outcome validates that the clustering captures clinically meaningful groups.
+
+### Cross-Tabulation
+
+| Cluster | No Disease | Disease | Total |
+|---------|------------|---------|-------|
+| **1** | 26 | 104 | 130 |
+| **2** | 134 | 33 | 167 |
+
+### Proportions Within Each Cluster
+
+| Cluster | No Disease | Disease |
+|---------|------------|---------|
+| **1** | 20.0% | **80.0%** |
+| **2** | **80.2%** | 19.8% |
+
+![Cluster-Disease Comparison](visualizations/cluster_disease_comparison.png)
+
+### Interpretation
+
+The clustering shows **strong alignment with actual disease status**:
+
+- **Cluster 1** is predominantly diseased patients (80%)
+- **Cluster 2** is predominantly healthy patients (80%)
+
+This confirms that the unsupervised clustering, based purely on clinical features (without using the diagnosis), successfully identified patient groups that correspond to disease presence.
+
+> Despite the weak silhouette score (0.26), the external validation demonstrates that the clusters have **clinical validity**.
+
+---
+
+## 9. Next Steps
 - [ ] Cluster profiling: Detailed variable-by-variable comparison
-- [ ] PCA visualization: 2D projection of clusters
+
