@@ -43,54 +43,6 @@ cat("  Max:", round(max(gower_mat), 4), "\n")
 cat("  Mean:", round(mean(gower_mat[gower_mat > 0]), 4), "\n\n")
 
 # ==============================================================================
-# 3. HIERARCHICAL CLUSTERING
-# ==============================================================================
-
-cat("----------------------------------------\n")
-cat("HIERARCHICAL CLUSTERING\n")
-cat("----------------------------------------\n\n")
-
-# Apply hierarchical clustering with different linkage methods
-linkage_methods <- c("single", "complete", "average")
-hc_results <- list()
-
-for (method in linkage_methods) {
-    hc_results[[method]] <- hclust(gower_dist, method = method)
-    cat("Computed hierarchical clustering with", method, "linkage\n")
-}
-
-# Plot dendrograms (without cluster rectangles - initial view)
-png("visualizations/dendrograms.png", width = 1200, height = 400)
-par(mfrow = c(1, 3))
-for (method in linkage_methods) {
-    plot(hc_results[[method]],
-        main = paste("Dendrogram -", tools::toTitleCase(method), "Linkage"),
-        xlab = "", sub = "", cex = 0.6,
-        hang = -1
-    )
-}
-dev.off()
-cat("\nDendrograms saved to 'visualizations/dendrograms.png'\n")
-
-# Plot dendrograms with cluster rectangles (after optimal k is determined)
-plot_dendrograms_with_clusters <- function(k) {
-    cluster_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33")
-    png("visualizations/dendrograms_clusters.png", width = 1200, height = 500)
-    par(mfrow = c(1, 3), mar = c(5, 4, 4, 2))
-    for (method in linkage_methods) {
-        plot(hc_results[[method]],
-            main = paste("Dendrogram -", tools::toTitleCase(method), "Linkage"),
-            xlab = "", sub = paste("k =", k), cex = 0.5,
-            hang = -1
-        )
-        rect.hclust(hc_results[[method]], k = k, border = cluster_colors[1:k])
-    }
-    dev.off()
-    cat("Dendrograms with cluster cuts saved to 'visualizations/dendrograms_clusters.png'\n\n")
-}
-
-
-# ==============================================================================
 # 4. DETERMINE OPTIMAL NUMBER OF CLUSTERS (SILHOUETTE)
 # ==============================================================================
 
@@ -138,16 +90,52 @@ abline(v = optimal_k, col = "red", lty = 2)
 dev.off()
 cat("Silhouette plot saved to 'visualizations/silhouette_optimal_k.png'\n\n")
 
-# Generate dendrograms with cluster rectangles
-plot_dendrograms_with_clusters(optimal_k)
-
 # ==============================================================================
 # 5. HIERARCHICAL CLUSTERING - CUT AT OPTIMAL K
 # ==============================================================================
 
 cat("----------------------------------------\n")
-cat("HIERARCHICAL CLUSTERING RESULTS (k =", optimal_k, ")\n")
+cat("HIERARCHICAL CLUSTERING\n")
 cat("----------------------------------------\n\n")
+
+# Apply hierarchical clustering with different linkage methods
+linkage_methods <- c("single", "complete", "average")
+hc_results <- list()
+
+for (method in linkage_methods) {
+  hc_results[[method]] <- hclust(gower_dist, method = method)
+  cat("Computed hierarchical clustering with", method, "linkage\n")
+}
+
+# Plot dendrograms (without cluster rectangles - initial view)
+png("visualizations/dendrograms.png", width = 1200, height = 400)
+par(mfrow = c(1, 3))
+for (method in linkage_methods) {
+  plot(hc_results[[method]],
+       main = paste("Dendrogram -", tools::toTitleCase(method), "Linkage"),
+       xlab = "", sub = "", cex = 0.6,
+       hang = -1
+  )
+}
+dev.off()
+cat("\nDendrograms saved to 'visualizations/dendrograms.png'\n")
+
+# Plot dendrograms with cluster rectangles (after optimal k is determined)
+plot_dendrograms_with_clusters <- function(k) {
+  cluster_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33")
+  png("visualizations/dendrograms_clusters.png", width = 1200, height = 500)
+  par(mfrow = c(1, 3), mar = c(5, 4, 4, 2))
+  for (method in linkage_methods) {
+    plot(hc_results[[method]],
+         main = paste("Dendrogram -", tools::toTitleCase(method), "Linkage"),
+         xlab = "", sub = paste("k =", k), cex = 0.5,
+         hang = -1
+    )
+    rect.hclust(hc_results[[method]], k = k, border = cluster_colors[1:k])
+  }
+  dev.off()
+  cat("Dendrograms with cluster cuts saved to 'visualizations/dendrograms_clusters.png'\n\n")
+}
 
 # Cut dendrograms at optimal k
 hc_clusters <- list()
@@ -170,6 +158,9 @@ for (method in linkage_methods) {
 # Find best linkage method
 best_linkage <- names(which.max(sapply(hc_silhouettes, function(s) mean(s[, "sil_width"]))))
 cat("\nBest linkage method:", best_linkage, "\n\n")
+
+# Generate dendrograms with cluster rectangles
+plot_dendrograms_with_clusters(optimal_k)
 
 # ==============================================================================
 # 6. PAM CLUSTERING
