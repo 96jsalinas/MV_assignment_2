@@ -292,8 +292,8 @@ barplot(comparison_df$Avg_Silhouette,
     ylab = "Average Silhouette Width",
     las = 2, cex.names = 0.8
 )
-abline(h = 0.5, col = "red", lty = 2)
-legend("topright", legend = "0.5 threshold", col = "red", lty = 2, bty = "n")
+abline(h = 0.25, col = "red", lty = 2)
+legend("topright", legend = "0.25 threshold", col = "red", lty = 2, bty = "n")
 dev.off()
 cat("Method comparison plot saved to 'visualizations/method_comparison.png'\n\n")
 
